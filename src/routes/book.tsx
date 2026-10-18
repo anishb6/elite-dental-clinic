@@ -37,7 +37,7 @@ function Book() {
     e.preventDefault();
     setError("");
     const parsed = schema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    if (!parsed.success) return setError(parsed.error.issues[0].message);
+    if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? "Please check the form");
     setStatus("sending");
     const d = parsed.data;
     const { error } = await supabase.from("appointments").insert({
