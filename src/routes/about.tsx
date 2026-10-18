@@ -11,6 +11,8 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "Meet Dr. Debayan Saha and the Elite Dental Clinic team in Barasat — gentle, honest, modern dentistry." },
       { property: "og:title", content: "About Dr. Debayan Saha | Elite Dental Clinic" },
       { property: "og:description", content: "Gentle, honest, modern dentistry in Barasat." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: About,

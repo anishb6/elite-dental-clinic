@@ -12,6 +12,8 @@ export const Route = createFileRoute("/gallery")({
       { name: "description", content: "See smile results and take a look inside Elite Dental Clinic in Barasat." },
       { property: "og:title", content: "Smile Gallery | Elite Dental Clinic" },
       { property: "og:description", content: "Smile results and our modern clinic in Barasat." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Gallery,

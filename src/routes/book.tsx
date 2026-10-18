@@ -12,6 +12,8 @@ export const Route = createFileRoute("/book")({
       { name: "description", content: "Request an appointment with Dr. Debayan Saha at Elite Dental Clinic, Barasat." },
       { property: "og:title", content: "Book an Appointment | Elite Dental Clinic" },
       { property: "og:description", content: "Pick a treatment and time — we'll call to confirm." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Book,

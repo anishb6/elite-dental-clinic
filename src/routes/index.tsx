@@ -11,6 +11,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Painless root canal, teeth cleaning, whitening, kids' dentistry and emergency dental care in Barasat by Dr. Debayan Saha." },
       { property: "og:title", content: "Elite Dental Clinic Barasat | Dr. Debayan Saha" },
       { property: "og:description", content: "Modern, gentle dental care in Barasat. Book your appointment today." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
@@ -62,10 +64,10 @@ function Index() {
       <section className="mx-auto max-w-7xl px-6 py-24">
         <p className="eyebrow">Patient stories</p>
         <div className="mt-10 grid gap-10 md:grid-cols-3">
-          {REVIEWS.slice(0, 3).map((r, i) => (
-            <blockquote key={i} className="border-t-2 border-gold pt-6">
+          {REVIEWS.slice(0, 3).map((r) => (
+            <blockquote key={r.name} className="min-w-0 border-t-2 border-gold pt-6">
               <p className="font-serif text-2xl leading-snug">"{r.text}"</p>
-              <footer className="mt-4 text-sm text-muted-foreground">{r.treatment}</footer>
+              <footer className="mt-4 text-sm font-semibold text-muted-foreground">— {r.name}</footer>
             </blockquote>
           ))}
         </div>

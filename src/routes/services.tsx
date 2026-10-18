@@ -9,6 +9,8 @@ export const Route = createFileRoute("/services")({
       { name: "description", content: "Root canal, teeth cleaning, fillings, extraction, crowns, whitening, gum treatment, dentures, kids' and emergency dentistry in Barasat." },
       { property: "og:title", content: "Dental Treatments | Elite Dental Clinic Barasat" },
       { property: "og:description", content: "15 dental treatments under one roof, by Dr. Debayan Saha." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Services,
