@@ -9,6 +9,8 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Address, phone, opening hours and map for Elite Dental Clinic, Barasat." },
       { property: "og:title", content: "Contact Elite Dental Clinic Barasat" },
       { property: "og:description", content: "Find us, call us or message us on WhatsApp." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Contact,

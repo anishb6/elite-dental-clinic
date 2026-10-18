@@ -9,6 +9,8 @@ export const Route = createFileRoute("/reviews")({
       { name: "description", content: "What patients say about Dr. Debayan Saha and Elite Dental Clinic in Barasat." },
       { property: "og:title", content: "Patient Reviews | Elite Dental Clinic" },
       { property: "og:description", content: "Stories from our patients in Barasat." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Reviews,
@@ -19,11 +21,10 @@ function Reviews() {
     <SiteLayout>
       <PageHero eyebrow="Reviews" title="Kind words from our patients." />
       <section className="mx-auto max-w-7xl px-6 py-24 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-        {REVIEWS.map((r, i) => (
-          <blockquote key={i} className="border-t-2 border-gold pt-6">
-            <p className="text-gold tracking-widest">★★★★★</p>
-            <p className="mt-3 font-serif text-2xl leading-snug">"{r.text}"</p>
-            <footer className="mt-4 text-sm text-muted-foreground">{r.treatment}</footer>
+        {REVIEWS.map((r) => (
+          <blockquote key={r.name} className="min-w-0 border-t-2 border-gold pt-6">
+            <p className="font-serif text-2xl leading-snug break-words">“{r.text}”</p>
+            <footer className="mt-5 text-sm font-semibold text-muted-foreground">— {r.name}</footer>
           </blockquote>
         ))}
       </section>
