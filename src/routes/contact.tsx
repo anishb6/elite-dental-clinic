@@ -21,7 +21,7 @@ function Contact() {
       <section className="mx-auto max-w-7xl px-6 py-24 grid gap-14 md:grid-cols-2">
         <div className="space-y-8">
           <div><p className="eyebrow">Address</p><p className="mt-2 text-xl">{CLINIC.address}</p></div>
-          <div><p className="eyebrow">Phone</p><a href={`tel:${CLINIC.phone}`} className="mt-2 block text-xl">{CLINIC.phone}</a></div>
+          <div><p className="eyebrow">Phone</p><a href={CLINIC.phoneHref} className="mt-2 block text-xl">{CLINIC.phone}</a><p className="mt-1 text-sm text-muted-foreground">Calls &amp; WhatsApp</p></div>
           <div>
             <p className="eyebrow">Hours</p>
             {CLINIC.hours.map(([d, h]) => <p key={d} className="mt-2">{d}: {h}</p>)}
@@ -32,8 +32,8 @@ function Contact() {
           </div>
         </div>
         <iframe
-          title="Map to Elite Dental Clinic"
-          src="https://www.google.com/maps?q=Barasat,West+Bengal&output=embed"
+          title="Map to Elite Dental Clinic, Nabapally, Barasat"
+          src={`https://www.google.com/maps?q=${CLINIC.mapQuery}&output=embed`}
           className="w-full min-h-[400px] border-0"
           loading="lazy"
         />

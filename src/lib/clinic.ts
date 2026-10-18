@@ -2,13 +2,19 @@ export const CLINIC = {
   name: "Elite Dental Clinic",
   doctor: "Dr. Debayan Saha",
   city: "Barasat",
-  address: "Barasat, North 24 Parganas, West Bengal", // placeholder: full address needed
-  phone: "+91 00000 00000", // placeholder
-  whatsapp: "910000000000", // placeholder
+  address:
+    "Sree Durga Apartment, near Nabapally Co-operative Bank, opposite Modern Homeo Hall, Bijaylakshmi Colony, Chakravartipara, Nabapally, Barasat, Kolkata, West Bengal 700126",
+  phone: "+91 91477 18046",
+  phoneHref: "tel:+919147718046",
+  whatsapp: "919147718046",
+  qualifications: "B.D.S. (WBUHS), Stomatologist",
+  background:
+    "Formerly attached to the Dept. of General Medicine, College of Medicine & Sagore Dutta Hospital, Kamarhati",
   hours: [
-    ["Mon – Sat", "10:00 AM – 2:00 PM, 5:00 PM – 9:00 PM"],
-    ["Sunday", "By appointment"],
+    ["Every day", "10:30 AM – 1:30 PM & 6:00 PM – 9:00 PM"],
   ] as const,
+  mapQuery:
+    "Sree+Durga+Apartment,+Bijaylakshmi+Colony,+Chakravartipara,+Nabapally,+Barasat,+Kolkata,+West+Bengal+700126",
 };
 
 export const SERVICES = [
