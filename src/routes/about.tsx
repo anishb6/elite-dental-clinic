@@ -35,7 +35,8 @@ function About() {
           <p>From children's first checkups to complex root canals and smile makeovers, every treatment is delivered with patience and precision.</p>
           <div className="border-l-2 border-gold pl-5 text-foreground">
             <p className="font-semibold">Qualifications</p>
-            <p className="text-sm text-muted-foreground">BDS — details to be added</p>
+            <p className="text-sm text-muted-foreground">{CLINIC.qualifications}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{CLINIC.background}</p>
           </div>
         </div>
       </section>
