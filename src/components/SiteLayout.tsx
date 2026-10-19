@@ -18,7 +18,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 h-20 flex items-center justify-between">
           <Link to="/" className="leading-tight">
-            <span className="block font-serif text-2xl">Elite Dental</span>
+            <span className="block font-serif text-2xl">Elite Dental Clinic</span>
             <span className="block text-[0.65rem] tracking-[0.3em] uppercase text-gold">Dr. Debayan Saha · Barasat</span>
           </Link>
           <nav className="hidden lg:flex items-center gap-8 text-sm">
