@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
-import hero from "@/assets/hero.jpg";
-import reception from "@/assets/reception.jpg";
-import smile from "@/assets/smile.jpg";
-import doctor from "@/assets/doctor.jpg";
+import { CLINIC_PHOTOS, TREATMENT_PHOTOS } from "@/lib/clinic-photos";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -19,24 +16,33 @@ export const Route = createFileRoute("/gallery")({
   component: Gallery,
 });
 
-const ITEMS = [
-  { src: smile, alt: "Smile result after whitening", label: "Smile result" },
-  { src: hero, alt: "Treatment room", label: "Treatment room" },
-  { src: reception, alt: "Reception area", label: "Reception" },
-  { src: doctor, alt: "Dr. Debayan Saha", label: "Dr. Debayan Saha" },
-];
-
 function Gallery() {
   return (
     <SiteLayout>
-      <PageHero eyebrow="Gallery" title="Smiles & spaces." text="Before-and-after results and a look inside our clinic. More real patient results coming soon." />
-      <section className="mx-auto max-w-7xl px-6 py-24 grid gap-6 md:grid-cols-2">
-        {ITEMS.map((it) => (
-          <figure key={it.label} className="group overflow-hidden bg-card">
-            <img src={it.src} alt={it.alt} loading="lazy" className="aspect-[5/4] w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <PageHero eyebrow="Gallery" title="Smiles & spaces." text="Patient treatment results and a look inside Elite Dental Clinic, Barasat." />
+      <section className="mx-auto max-w-7xl px-6 py-16">
+        <h2 className="mb-8 text-4xl">Inside our clinic</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+        {CLINIC_PHOTOS.map((it) => (
+          <figure key={it.src} className="overflow-hidden bg-card">
+            <img src={it.src} alt={it.alt} loading="lazy" width={1600} height={1200} className="aspect-[4/3] w-full object-contain" />
             <figcaption className="p-4 eyebrow">{it.label}</figcaption>
           </figure>
         ))}
+        </div>
+      </section>
+      <section className="bg-secondary py-16">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-8 text-4xl">Treatment results</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {TREATMENT_PHOTOS.map((it) => (
+              <figure key={it.src} className="overflow-hidden bg-card">
+                <img src={it.src} alt={it.alt} loading="lazy" width={1213} height={1600} className="aspect-[1213/1600] w-full object-contain" />
+                <figcaption className="p-4 eyebrow">{it.label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
       </section>
     </SiteLayout>
   );
