@@ -33,12 +33,22 @@ function Contact() {
             <Link to="/book" className="btn-outline">Book appointment</Link>
           </div>
         </div>
-        <iframe
-          title="Map to Elite Dental Clinic, Nabapally, Barasat"
-          src={`https://www.google.com/maps?q=${CLINIC.mapQuery}&output=embed`}
-          className="w-full min-h-[400px] border-0"
-          loading="lazy"
-        />
+        <div className="space-y-2">
+          <iframe
+            title="Map to Elite Dental Clinic, Nabapally, Barasat"
+            src={`https://www.google.com/maps?q=${CLINIC.mapCoords}&z=17&output=embed`}
+            className="w-full min-h-[400px] border-0"
+            loading="lazy"
+          />
+          <a
+            href={CLINIC.mapsShareLink}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm underline underline-offset-4 hover:text-gold"
+          >
+            Open directions in Google Maps ↗
+          </a>
+        </div>
       </section>
     </SiteLayout>
   );
