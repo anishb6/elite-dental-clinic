@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
 import { CLINIC } from "@/lib/clinic";
-import { CLINIC_PHOTOS } from "@/lib/clinic-photos";
+import { CLINIC_PHOTOS, DOCTOR_PHOTO } from "@/lib/clinic-photos";
 
 export const Route = createFileRoute("/about")({
   head: () => ({

@@ -15,6 +15,11 @@ export const CLINIC_PHOTOS = [
   { src: entrance.url, alt: "Entrance to Elite Dental Clinic, Barasat", label: "Clinic entrance" },
 ] as const;
 
+export const DOCTOR_PHOTO = {
+  src: doctor.url,
+  alt: "Dr. Debayan Saha, dentist at Elite Dental Clinic in Barasat",
+};
+
 export const TREATMENT_PHOTOS = [
   { src: cavity.url, alt: "Dental cavity and restoration treatment photographs", label: "Cavity restoration" },
   { src: child.url, alt: "Primary tooth before and after restoration", label: "Primary tooth restoration" },
