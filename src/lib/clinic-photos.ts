@@ -12,7 +12,7 @@ import comparison from "@/assets/smile-comparison.jpg.asset.json";
 export const CLINIC_PHOTOS = [
   { src: room.url, alt: "Inside Elite Dental Clinic's treatment room", label: "Treatment room" },
   { src: entrance.url, alt: "Entrance to Elite Dental Clinic, Barasat", label: "Clinic entrance" },
-];
+] as const;
 
 export const TREATMENT_PHOTOS = [
   { src: cavity.url, alt: "Dental cavity and restoration treatment photographs", label: "Cavity restoration" },
