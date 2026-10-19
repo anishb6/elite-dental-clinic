@@ -8,11 +8,17 @@ import broken from "@/assets/broken-tooth-restoration.jpg.asset.json";
 import scaling from "@/assets/scaling-before-after.jpg.asset.json";
 import premolar from "@/assets/premolar-restoration.jpg.asset.json";
 import comparison from "@/assets/smile-comparison.jpg.asset.json";
+import doctor from "@/assets/dr-debayan-saha.jpg.asset.json";
 
 export const CLINIC_PHOTOS = [
   { src: room.url, alt: "Inside Elite Dental Clinic's treatment room", label: "Treatment room" },
   { src: entrance.url, alt: "Entrance to Elite Dental Clinic, Barasat", label: "Clinic entrance" },
 ] as const;
+
+export const DOCTOR_PHOTO = {
+  src: doctor.url,
+  alt: "Dr. Debayan Saha, dentist at Elite Dental Clinic in Barasat",
+};
 
 export const TREATMENT_PHOTOS = [
   { src: cavity.url, alt: "Dental cavity and restoration treatment photographs", label: "Cavity restoration" },
