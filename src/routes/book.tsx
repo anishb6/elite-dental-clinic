@@ -48,6 +48,14 @@ function Book() {
       message: d.message || null,
     });
     if (error) { setStatus("idle"); return setError("Something went wrong. Please call us instead."); }
+    // Email the clinic. Never block or fail the booking if this fails.
+    try {
+      await fetch("/api/notify-appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...d, email: d.email || null, message: d.message || null }),
+      });
+    } catch {}
     setStatus("done");
   }
 
