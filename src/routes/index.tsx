@@ -35,7 +35,7 @@ function Index() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24 grid gap-14 md:grid-cols-2 items-center">
-        <img src={CLINIC_PHOTOS[0].src} alt={CLINIC_PHOTOS[0].alt} loading="lazy" width={1448} height={1086} className="w-full rounded-sm shadow-2xl" />
+        <img src={DOCTOR_PHOTO.src} alt={DOCTOR_PHOTO.alt} loading="lazy" width={900} height={1200} className="mx-auto aspect-[3/4] w-full max-w-sm rounded-sm object-cover object-top shadow-2xl" />
         <div>
           <p className="eyebrow">Meet your dentist</p>
           <h2 className="mt-4 text-4xl md:text-6xl">{CLINIC.doctor}</h2>

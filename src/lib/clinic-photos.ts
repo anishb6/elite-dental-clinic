@@ -8,6 +8,7 @@ import broken from "@/assets/broken-tooth-restoration.jpg.asset.json";
 import scaling from "@/assets/scaling-before-after.jpg.asset.json";
 import premolar from "@/assets/premolar-restoration.jpg.asset.json";
 import comparison from "@/assets/smile-comparison.jpg.asset.json";
+import doctor from "@/assets/dr-debayan-saha.jpg.asset.json";
 
 export const CLINIC_PHOTOS = [
   { src: room.url, alt: "Inside Elite Dental Clinic's treatment room", label: "Treatment room" },

@@ -29,7 +29,7 @@ function About() {
     <SiteLayout>
       <PageHero eyebrow="About" title={`${CLINIC.doctor}`} text="Caring dentistry for every member of your family in Barasat." />
       <section className="mx-auto max-w-7xl px-6 py-24 grid gap-14 md:grid-cols-2">
-        <img src={CLINIC_PHOTOS[0].src} alt={CLINIC_PHOTOS[0].alt} loading="lazy" width={1448} height={1086} className="w-full rounded-sm" />
+        <img src={DOCTOR_PHOTO.src} alt={DOCTOR_PHOTO.alt} loading="lazy" width={900} height={1200} className="mx-auto aspect-[3/4] w-full max-w-md rounded-sm object-cover object-top" />
         <div className="space-y-6 text-lg text-muted-foreground">
           <p className="eyebrow">My story</p>
           <p>{CLINIC.doctor} founded Elite Dental Clinic to give Barasat a dental practice that feels both premium and personal — where treatment is explained clearly and patients never feel rushed.</p>
