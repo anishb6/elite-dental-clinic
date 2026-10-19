@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { CLINIC, SERVICES, REVIEWS } from "@/lib/clinic";
-import hero from "@/assets/hero.jpg";
-import doctor from "@/assets/doctor.jpg";
+import { CLINIC_PHOTOS } from "@/lib/clinic-photos";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,7 +21,7 @@ function Index() {
   return (
     <SiteLayout>
       <section className="relative bg-primary text-primary-foreground overflow-hidden">
-        <img src={hero} alt="Elite Dental Clinic treatment room" width={1600} height={1008} className="absolute inset-0 h-full w-full object-cover opacity-35" />
+        <img src={CLINIC_PHOTOS[0].src} alt={CLINIC_PHOTOS[0].alt} width={1448} height={1086} className="absolute inset-0 h-full w-full object-cover opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent" />
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40">
           <p className="eyebrow">Dentist in {CLINIC.city}</p>
@@ -36,7 +35,7 @@ function Index() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24 grid gap-14 md:grid-cols-2 items-center">
-        <img src={doctor} alt={CLINIC.doctor} loading="lazy" width={912} height={1104} className="w-full max-w-md rounded-sm shadow-2xl" />
+        <img src={CLINIC_PHOTOS[0].src} alt={CLINIC_PHOTOS[0].alt} loading="lazy" width={1448} height={1086} className="w-full rounded-sm shadow-2xl" />
         <div>
           <p className="eyebrow">Meet your dentist</p>
           <h2 className="mt-4 text-4xl md:text-6xl">{CLINIC.doctor}</h2>
