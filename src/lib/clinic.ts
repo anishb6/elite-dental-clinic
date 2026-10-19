@@ -15,6 +15,8 @@ export const CLINIC = {
   ] as const,
   mapQuery:
     "Sree+Durga+Apartment,+Bijaylakshmi+Colony,+Chakravartipara,+Nabapally,+Barasat,+Kolkata,+West+Bengal+700126",
+  mapCoords: "22.7249436,88.4745912",
+  mapsShareLink: "https://maps.app.goo.gl/z7vS12GsMuJmTTaF6",
 };
 
 export const SERVICES = [
