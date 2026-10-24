@@ -7,6 +7,9 @@ export const CLINIC = {
   phone: "+91 91477 18046",
   phoneHref: "tel:+919147718046",
   whatsapp: "919147718046",
+  whatsappBookHref:
+    "https://wa.me/919147718046?text=" +
+    encodeURIComponent("Hello Dr. Saha, I would like to book an appointment at Elite Dental Clinic."),
   qualifications: "B.D.S. (WBUHS), Stomatologist",
   background:
     "Formerly attached to the Dept. of General Medicine, College of Medicine & Sagore Dutta Hospital, Kamarhati",

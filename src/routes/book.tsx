@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
-import { SERVICES } from "@/lib/clinic";
 import { supabase } from "@/integrations/supabase/client";
+import { track } from "@/lib/analytics";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/book")({
       { title: "Book a Dental Appointment | Elite Dental Clinic Barasat" },
       { name: "description", content: "Request an appointment with Dr. Debayan Saha at Elite Dental Clinic, Barasat." },
       { property: "og:title", content: "Book an Appointment | Elite Dental Clinic" },
-      { property: "og:description", content: "Pick a treatment and time — we'll call to confirm." },
+      { property: "og:description", content: "Pick a date and time — we'll call to confirm." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -23,10 +23,10 @@ const schema = z.object({
   name: z.string().trim().min(1, "Please enter your name").max(100),
   phone: z.string().trim().regex(/^[+\d\s-]{6,20}$/, "Please enter a valid phone number"),
   email: z.string().trim().email("Invalid email").max(255).optional().or(z.literal("")),
-  treatment: z.string().min(1, "Choose a treatment").max(100),
   preferred_date: z.string().min(1, "Choose a date"),
   preferred_time: z.string().min(1, "Choose a time").max(20),
   message: z.string().trim().max(1000).optional(),
+  source: z.string().max(40).optional(),
 });
 
 const field = "w-full border border-input bg-card px-4 py-3 focus:outline-none focus:ring-2 focus:ring-ring";
@@ -46,14 +46,17 @@ function Book() {
       ...d,
       email: d.email || null,
       message: d.message || null,
+      source: d.source || null,
+      treatment: "Not specified",
     });
-    if (error) { setStatus("idle"); return setError("Something went wrong. Please call us instead."); }
+    if (error) { track("booking_failed"); setStatus("idle"); return setError("Something went wrong. Please call us instead."); }
+    track("booking_submitted", { preferred_time: d.preferred_time, source: d.source || "unknown" });
     // Email the clinic. Never block or fail the booking if this fails.
     try {
       await fetch("/api/notify-appointment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...d, email: d.email || null, message: d.message || null }),
+        body: JSON.stringify({ ...d, email: d.email || null, message: d.message || null, source: d.source || null }),
       });
     } catch {}
     setStatus("done");
@@ -73,13 +76,6 @@ function Book() {
             <label className="sm:col-span-2 text-sm">Full name *<input name="name" className={field} maxLength={100} /></label>
             <label className="text-sm">Phone *<input name="phone" type="tel" className={field} maxLength={20} /></label>
             <label className="text-sm">Email<input name="email" type="email" className={field} maxLength={255} /></label>
-            <label className="sm:col-span-2 text-sm">Treatment *
-              <select name="treatment" className={field} defaultValue="">
-                <option value="" disabled>Select a treatment</option>
-                {SERVICES.map((s) => <option key={s.name}>{s.name}</option>)}
-                <option>Not sure / Consultation</option>
-              </select>
-            </label>
             <label className="text-sm">Preferred date *<input name="preferred_date" type="date" min={new Date().toISOString().slice(0, 10)} className={field} /></label>
             <label className="text-sm">Preferred time *
               <select name="preferred_time" className={field} defaultValue="">
@@ -87,7 +83,14 @@ function Book() {
                 <option>Morning</option><option>Afternoon</option><option>Evening</option>
               </select>
             </label>
-            <label className="sm:col-span-2 text-sm">Message<textarea name="message" rows={4} className={field} maxLength={1000} /></label>
+            <label className="sm:col-span-2 text-sm">How did you find us?
+              <select name="source" className={field} defaultValue="">
+                <option value="">Select (optional)</option>
+                <option>Google search</option><option>Google Maps</option><option>Friend or family</option>
+                <option>Instagram / Facebook</option><option>Passed by the clinic</option><option>Other</option>
+              </select>
+            </label>
+            <label className="sm:col-span-2 text-sm">What do you need help with?<textarea name="message" rows={4} className={field} maxLength={1000} /></label>
             {error && <p className="sm:col-span-2 text-destructive text-sm">{error}</p>}
             <button disabled={status === "sending"} className="btn-gold sm:col-span-2">
               {status === "sending" ? "Sending…" : "Request Appointment"}

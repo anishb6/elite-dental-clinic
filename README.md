@@ -1,24 +1,28 @@
-# Bright Smile Dental
+# Elite Dental Clinic — Barasat
 
-im a dentist i want to build my website
+Website for Dr. Debayan Saha's dental clinic in Barasat, West Bengal. Live at **https://drdebayansaha.in**.
 
-This project was built with [Lovable](https://lovable.dev).
+Patients can browse treatments, read real Google reviews, see before/after cases, find the clinic on a map, and request an appointment online or via WhatsApp.
 
-## Build with Lovable
+## Stack
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/2e94c94c-db61-439e-8df4-eba50cfcc3a1).
+- TanStack Start (React, TypeScript, file-based routing, SSR)
+- Tailwind CSS + shadcn/ui components
+- Supabase (Postgres) for storing appointment requests, with row-level security (public insert only, no public read)
+- Resend for emailing the clinic on each new request
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## Run locally
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+cp .env.example .env   # fill in your own Supabase values
+npm install
 npm run dev
 ```
+
+Server-side environment variables (set on your host, never committed): `RESEND_API_KEY`, `NOTIFY_EMAIL`, `NOTIFY_FROM`.
+
+## Scripts
+
+- `npm run dev` — start the dev server
+- `npm run build` — production build
+- `npm test` — run tests

@@ -5,10 +5,11 @@ const schema = z.object({
   name: z.string().trim().min(1).max(100),
   phone: z.string().trim().min(6).max(20),
   email: z.string().trim().max(255).nullable().optional(),
-  treatment: z.string().min(1).max(100),
+  treatment: z.string().max(100).optional(),
   preferred_date: z.string().min(1).max(20),
   preferred_time: z.string().min(1).max(20),
   message: z.string().trim().max(1000).nullable().optional(),
+  source: z.string().max(40).nullable().optional(),
 });
 
 const esc = (s: string) =>
@@ -39,9 +40,9 @@ export const Route = createFileRoute("/api/notify-appointment")({
           ["Name", d.name],
           ["Phone", d.phone],
           ["Email", d.email || "—"],
-          ["Treatment", d.treatment],
           ["Preferred date", d.preferred_date],
           ["Preferred time", d.preferred_time],
+          ["How they found us", d.source || "—"],
           ["Message", d.message || "—"],
         ];
         const html =

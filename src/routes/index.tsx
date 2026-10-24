@@ -29,6 +29,7 @@ function Index() {
           <p className="mt-6 max-w-xl text-lg opacity-80">Gentle, modern dental care by {CLINIC.doctor} — from routine checkups to painless root canals and smile makeovers.</p>
           <div className="mt-10 flex flex-wrap gap-4">
             <Link to="/book" className="btn-gold">Book Appointment</Link>
+            <a href={CLINIC.whatsappBookHref} target="_blank" rel="noreferrer" className="btn-outline">Book on WhatsApp</a>
             <Link to="/services" className="btn-outline">Our Treatments</Link>
           </div>
         </div>
@@ -75,8 +76,9 @@ function Index() {
       <section className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 py-16 flex flex-col md:flex-row gap-6 items-center justify-between">
           <h2 className="text-4xl md:text-5xl">Ready for a healthier smile?</h2>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <a href={CLINIC.phoneHref} className="btn-outline">Call {CLINIC.phone}</a>
+            <a href={CLINIC.whatsappBookHref} target="_blank" rel="noreferrer" className="btn-outline">Book on WhatsApp</a>
             <Link to="/book" className="btn-gold">Book Now</Link>
           </div>
         </div>
