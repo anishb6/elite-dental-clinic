@@ -1,0 +1,2 @@
+- Keep patient testimonials in the shared clinic data module so Home and Reviews use the same attributed feedback.
+- Keep uploaded clinic and treatment photo references in one shared photo module using asset pointers so pages reuse accurate labels and images.
