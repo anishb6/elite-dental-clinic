@@ -51,10 +51,14 @@ const sourceField = z.enum(BOOKING_SOURCES, {
   errorMap: () => ({ message: "Choose one of the listed options" }),
 });
 
-/** An untouched optional input arrives as "" - treat blank as "not provided". */
+/**
+ * An untouched optional input arrives as "" from the form, and as `null` when the browser sends
+ * the normalised payload (`toAppointmentPayload` turns blanks into null). Both mean "not provided".
+ */
 const optional = <S extends z.ZodTypeAny>(schema: S) =>
   z.preprocess(
-    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    (value) =>
+      value === null || (typeof value === "string" && value.trim() === "") ? undefined : value,
     schema.optional(),
   );
 
