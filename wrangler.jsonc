@@ -1,0 +1,9 @@
+{
+  // Nitro merges this file into the generated .output/server/wrangler.json (main/assets are added
+  // by the build).
+  // Pin the Worker name so it matches the existing "elite-dental-clinic" Worker; otherwise nitro
+  // auto-generates "<git-owner>-<repo>".
+  "name": "elite-dental-clinic",
+  // Required by `wrangler preview`, which Workers Builds runs for non-production branches.
+  "previews": {},
+}
