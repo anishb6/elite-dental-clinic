@@ -1,0 +1,6 @@
+{
+  // Pins the Worker name to the Cloudflare Workers Builds project. Nitro merges this file into the
+  // generated .output/server/wrangler.json (main/assets are filled in by the build). Without a name
+  // nitro auto-generates "<git-owner>-<repo>", which does not match the "elite-dental-clinic" Worker.
+  "name": "elite-dental-clinic",
+}
