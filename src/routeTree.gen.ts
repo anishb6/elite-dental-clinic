@@ -14,8 +14,18 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReviewsRouteImport } from './routes/reviews'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as ApiCreateAppointmentRouteImport } from './routes/api/create-appointment'
+import { Route as ApiNotifyAppointmentRouteImport } from './routes/api/notify-appointment'
+import { Route as ApiRetryNotificationsRouteImport } from './routes/api/retry-notifications'
+import { Route as ApiAdminAppointmentsRouteImport } from './routes/api/admin/appointments'
+import { Route as ApiAdminRetryOutboxRouteImport } from './routes/api/admin/retry-outbox'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -42,14 +52,64 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReviewsRoute = ReviewsRouteImport.update({
   id: '/reviews',
   path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCreateAppointmentRoute = ApiCreateAppointmentRouteImport.update({
+  id: '/api/create-appointment',
+  path: '/api/create-appointment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNotifyAppointmentRoute = ApiNotifyAppointmentRouteImport.update({
+  id: '/api/notify-appointment',
+  path: '/api/notify-appointment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRetryNotificationsRoute = ApiRetryNotificationsRouteImport.update({
+  id: '/api/retry-notifications',
+  path: '/api/retry-notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAppointmentsRoute = ApiAdminAppointmentsRouteImport.update({
+  id: '/api/admin/appointments',
+  path: '/api/admin/appointments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminRetryOutboxRoute = ApiAdminRetryOutboxRouteImport.update({
+  id: '/api/admin/retry-outbox',
+  path: '/api/admin/retry-outbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -59,8 +119,18 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/create-appointment': typeof ApiCreateAppointmentRoute
+  '/api/notify-appointment': typeof ApiNotifyAppointmentRoute
+  '/api/retry-notifications': typeof ApiRetryNotificationsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/api/admin/appointments': typeof ApiAdminAppointmentsRoute
+  '/api/admin/retry-outbox': typeof ApiAdminRetryOutboxRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,8 +138,18 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/create-appointment': typeof ApiCreateAppointmentRoute
+  '/api/notify-appointment': typeof ApiNotifyAppointmentRoute
+  '/api/retry-notifications': typeof ApiRetryNotificationsRoute
+  '/admin': typeof AdminIndexRoute
+  '/api/admin/appointments': typeof ApiAdminAppointmentsRoute
+  '/api/admin/retry-outbox': typeof ApiAdminRetryOutboxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,8 +158,18 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/create-appointment': typeof ApiCreateAppointmentRoute
+  '/api/notify-appointment': typeof ApiNotifyAppointmentRoute
+  '/api/retry-notifications': typeof ApiRetryNotificationsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/api/admin/appointments': typeof ApiAdminAppointmentsRoute
+  '/api/admin/retry-outbox': typeof ApiAdminRetryOutboxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,8 +179,18 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/gallery'
+    | '/privacy'
     | '/reviews'
+    | '/robots.txt'
     | '/services'
+    | '/sitemap.xml'
+    | '/admin/login'
+    | '/api/create-appointment'
+    | '/api/notify-appointment'
+    | '/api/retry-notifications'
+    | '/admin/'
+    | '/api/admin/appointments'
+    | '/api/admin/retry-outbox'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,8 +198,18 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/gallery'
+    | '/privacy'
     | '/reviews'
+    | '/robots.txt'
     | '/services'
+    | '/sitemap.xml'
+    | '/admin/login'
+    | '/api/create-appointment'
+    | '/api/notify-appointment'
+    | '/api/retry-notifications'
+    | '/admin'
+    | '/api/admin/appointments'
+    | '/api/admin/retry-outbox'
   id:
     | '__root__'
     | '/'
@@ -107,8 +217,18 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/gallery'
+    | '/privacy'
     | '/reviews'
+    | '/robots.txt'
     | '/services'
+    | '/sitemap.xml'
+    | '/admin/login'
+    | '/api/create-appointment'
+    | '/api/notify-appointment'
+    | '/api/retry-notifications'
+    | '/admin/'
+    | '/api/admin/appointments'
+    | '/api/admin/retry-outbox'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,8 +237,18 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   ServicesRoute: typeof ServicesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  ApiCreateAppointmentRoute: typeof ApiCreateAppointmentRoute
+  ApiNotifyAppointmentRoute: typeof ApiNotifyAppointmentRoute
+  ApiRetryNotificationsRoute: typeof ApiRetryNotificationsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  ApiAdminAppointmentsRoute: typeof ApiAdminAppointmentsRoute
+  ApiAdminRetryOutboxRoute: typeof ApiAdminRetryOutboxRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -158,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reviews': {
       id: '/reviews'
       path: '/reviews'
@@ -165,11 +302,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/create-appointment': {
+      id: '/api/create-appointment'
+      path: '/api/create-appointment'
+      fullPath: '/api/create-appointment'
+      preLoaderRoute: typeof ApiCreateAppointmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notify-appointment': {
+      id: '/api/notify-appointment'
+      path: '/api/notify-appointment'
+      fullPath: '/api/notify-appointment'
+      preLoaderRoute: typeof ApiNotifyAppointmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/retry-notifications': {
+      id: '/api/retry-notifications'
+      path: '/api/retry-notifications'
+      fullPath: '/api/retry-notifications'
+      preLoaderRoute: typeof ApiRetryNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/appointments': {
+      id: '/api/admin/appointments'
+      path: '/api/admin/appointments'
+      fullPath: '/api/admin/appointments'
+      preLoaderRoute: typeof ApiAdminAppointmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/retry-outbox': {
+      id: '/api/admin/retry-outbox'
+      path: '/api/admin/retry-outbox'
+      fullPath: '/api/admin/retry-outbox'
+      preLoaderRoute: typeof ApiAdminRetryOutboxRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -181,8 +381,18 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
+  PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   ServicesRoute: ServicesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  ApiCreateAppointmentRoute: ApiCreateAppointmentRoute,
+  ApiNotifyAppointmentRoute: ApiNotifyAppointmentRoute,
+  ApiRetryNotificationsRoute: ApiRetryNotificationsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  ApiAdminAppointmentsRoute: ApiAdminAppointmentsRoute,
+  ApiAdminRetryOutboxRoute: ApiAdminRetryOutboxRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

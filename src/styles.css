@@ -62,13 +62,21 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * {
+    border-color: var(--color-border);
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
-  h1, h2, h3 { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.01em; }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
 }
 
 @utility eyebrow {
@@ -80,17 +88,37 @@
 }
 
 @utility btn-gold {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0.85rem 1.75rem; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em;
-  background: var(--gold); color: var(--navy); border-radius: var(--radius);
-  transition: filter .2s, transform .2s;
-  &:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  background: var(--gold);
+  color: var(--navy);
+  border-radius: var(--radius);
+  transition:
+    filter 0.2s,
+    transform 0.2s;
+  &:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
 }
 
 @utility btn-outline {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0.85rem 1.75rem; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em;
-  border: 1px solid currentColor; border-radius: var(--radius);
-  transition: background .2s;
-  &:hover { background: color-mix(in oklab, currentColor 10%, transparent); }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+  &:hover {
+    background: color-mix(in oklab, currentColor 10%, transparent);
+  }
 }
