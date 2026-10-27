@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PREFERRED_TIMES } from "./constants";
-import { appointmentPayloadSchema, toAppointmentPayload, validateBookingForm } from "./schemas";
+import {
+  appointmentPayloadSchema,
+  createAppointmentSchema,
+  toAppointmentPayload,
+  validateBookingForm,
+} from "./schemas";
 
 // "Today" is 27 Oct 2026 in the clinic timezone for every test in this file.
 beforeEach(() => {
