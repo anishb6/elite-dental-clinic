@@ -88,3 +88,5 @@ Clinic staff can securely access the administrative dashboard at `/admin`:
 - **Canonical URLs**: Automatically generated for all public pages on the confirmed production origin (`https://drdebayansaha.in`).
 - **Sitemap & Robots**: `/sitemap.xml` and `/robots.txt` generated dynamically. Private `/admin/` and `/api/` endpoints are explicitly disallowed from indexing.
 - **Zero Secrets**: Secrets (`SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFY_SECRET`) are never bundled into client-side code.
+
+Build trigger test — documentation only.
