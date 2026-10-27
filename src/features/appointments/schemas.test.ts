@@ -193,6 +193,17 @@ describe("toAppointmentPayload", () => {
   });
 });
 
+describe("createAppointmentSchema (what POST /api/create-appointment validates)", () => {
+  it("accepts the browser payload when optional fields are blank (sent as null)", () => {
+    const form = validateBookingForm(valid);
+    if (!form.ok) throw new Error("expected valid form");
+    const sent = toAppointmentPayload(form.values);
+    expect(sent).toMatchObject({ email: null, message: null, source: null });
+    const server = createAppointmentSchema.safeParse(sent);
+    expect(server.success).toBe(true);
+  });
+});
+
 describe("shared validation: form and server schema agree", () => {
   const payload = {
     name: "Asha Roy",
