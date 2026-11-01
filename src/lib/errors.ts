@@ -54,6 +54,11 @@ export function toAppError(error: unknown, fallbackUserMessage?: string): AppErr
   });
 }
 
+/** HTTP status carried by an `AppError` (e.g. 401 for an expired session), else `null`. */
+export function getErrorStatus(error: unknown): number | null {
+  return isAppError(error) ? (error.status ?? null) : null;
+}
+
 /** Safe text to show a visitor for any thrown value. */
 export function getUserMessage(error: unknown, fallback = DEFAULT_USER_MESSAGE): string {
   return isAppError(error) ? error.userMessage : fallback;

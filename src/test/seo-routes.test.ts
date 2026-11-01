@@ -9,7 +9,6 @@ import { routeTree } from "@/routeTree.gen";
 // API endpoints, crawler configuration routes, and staff-only administrative routes.
 const NON_INDEXABLE_PATHS = new Set([
   "/api/create-appointment",
-  "/api/notify-appointment",
   "/api/retry-notifications",
   "/api/admin/appointments",
   "/api/admin/retry-outbox",

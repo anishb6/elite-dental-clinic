@@ -62,3 +62,41 @@ describe("0005_revoke_public_function_execute.sql", () => {
     expect(sql0005).toMatch(/RAISE EXCEPTION/);
   });
 });
+
+describe("0006_store_privacy_consent.sql", () => {
+  const sql0006 = read("0006_store_privacy_consent.sql");
+  const NEW_SIGNATURE =
+    "uuid,\\s*text,\\s*text,\\s*text,\\s*text,\\s*date,\\s*text,\\s*text,\\s*text,\\s*timestamptz,\\s*text";
+
+  it("adds both consent columns as nullable (old rows have no consent record)", () => {
+    expect(sql0006).toMatch(/ADD COLUMN IF NOT EXISTS privacy_consent_at timestamptz\s*,/);
+    expect(sql0006).toMatch(/ADD COLUMN IF NOT EXISTS privacy_policy_version text\s*;/);
+    // Only the ALTER TABLE statement matters here (the function body legitimately uses IS NOT NULL).
+    const alterStatement = /ALTER TABLE public\.appointments[^;]*;/.exec(sql0006)?.[0] ?? "";
+    expect(alterStatement).not.toMatch(/\bNOT NULL\b/i);
+  });
+
+  it("drops the old 9-argument function so only one version exists", () => {
+    expect(sql0006).toMatch(
+      /DROP FUNCTION IF EXISTS public\.create_appointment_with_outbox\(\s*uuid,\s*text,\s*text,\s*text,\s*text,\s*date,\s*text,\s*text,\s*text\s*\)/,
+    );
+  });
+
+  it("revokes PUBLIC/anon/authenticated and grants only service_role on the new signature", () => {
+    expect(sql0006).toMatch(
+      new RegExp(
+        `REVOKE\\s+ALL\\s+ON\\s+FUNCTION\\s+public\\.create_appointment_with_outbox\\(\\s*${NEW_SIGNATURE}\\s*\\)\\s+FROM\\s+PUBLIC\\s*,\\s*anon\\s*,\\s*authenticated\\s*;`,
+        "i",
+      ),
+    );
+    const grants = [
+      ...sql0006.matchAll(/GRANT\s+EXECUTE\s+ON\s+FUNCTION[^;]*TO\s+(\w+)\s*;/gi),
+    ].map((m) => m[1]);
+    expect(grants).toEqual(["service_role"]);
+  });
+
+  it("contains a self-check that aborts the migration", () => {
+    expect(sql0006).toMatch(/has_function_privilege\('anon'/);
+    expect(sql0006).toMatch(/RAISE EXCEPTION/);
+  });
+});

@@ -7,7 +7,7 @@
  * Browser code never talks to the `appointments` table directly.
  */
 import { apiRequest } from "@/api/http-client";
-import { CREATE_APPOINTMENT_ENDPOINT } from "../constants";
+import { CREATE_APPOINTMENT_ENDPOINT } from "@/api/endpoints";
 import type { AppointmentPayload } from "../schemas";
 
 export type CreateAppointmentResponse = {

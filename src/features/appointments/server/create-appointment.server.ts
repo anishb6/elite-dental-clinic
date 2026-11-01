@@ -15,8 +15,9 @@ import { createLogger } from "@/lib/logger";
 import { parseJsonBody } from "@/server/http/parse-body";
 import { getClientIp } from "@/server/http/rate-limit";
 import { jsonOk } from "@/server/http/responses";
+import { getAdminClient } from "@/server/services/database.server";
 import { verifyTurnstileToken } from "@/server/services/turnstile.server";
-import { BOOKING_ERROR_MESSAGE, DEFAULT_TREATMENT } from "../constants";
+import { BOOKING_ERROR_MESSAGE, DEFAULT_TREATMENT, PRIVACY_POLICY_VERSION } from "../constants";
 import { createAppointmentSchema, toAppointmentPayload } from "../schemas";
 import { claimAndDeliverNotification } from "./notification-outbox.server";
 
@@ -46,7 +47,7 @@ export async function handleCreateAppointment(request: Request): Promise<Respons
   }
 
   const payload = toAppointmentPayload(values);
-  const supabase = await getDatabaseClient();
+  const supabase = await getAdminClient(BOOKING_ERROR_MESSAGE);
 
   const appointmentId = crypto.randomUUID();
 
@@ -80,6 +81,10 @@ export async function handleCreateAppointment(request: Request): Promise<Respons
       p_preferred_time: payload.preferred_time,
       p_message: payload.message,
       p_source: payload.source,
+      // The schema already rejects a booking without consent, so reaching here means it was given.
+      // The time comes from the server, never from the browser.
+      p_privacy_consent_at: new Date().toISOString(),
+      p_privacy_policy_version: PRIVACY_POLICY_VERSION,
     },
   );
 
@@ -112,7 +117,7 @@ export async function handleCreateAppointment(request: Request): Promise<Respons
   }
 
   // Attempt initial delivery. If it fails, the outbox record retains failure metadata
-  // and schedules automatic retry via background worker. Patient receives confirmation.
+  // and is picked up by a later retry run (cron, or staff from /admin). Patient receives confirmation.
   try {
     await claimAndDeliverNotification(supabase, finalId);
   } catch (cause) {
@@ -122,22 +127,4 @@ export async function handleCreateAppointment(request: Request): Promise<Respons
   }
 
   return jsonOk({ id: finalId, saved: true });
-}
-
-async function getDatabaseClient() {
-  const serviceRoleKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
-  if (!serviceRoleKey || serviceRoleKey.trim() === "") {
-    logger.error("SUPABASE_SERVICE_ROLE_KEY is not configured on the server");
-    throw new AppError(
-      "CONFIG",
-      "Server database configuration is missing: SUPABASE_SERVICE_ROLE_KEY is not set",
-      {
-        status: 500,
-        userMessage: BOOKING_ERROR_MESSAGE,
-      },
-    );
-  }
-
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
 }

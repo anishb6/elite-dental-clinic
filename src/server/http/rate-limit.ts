@@ -1,5 +1,6 @@
 /**
- * In-memory sliding-window rate limiter.
+ * In-memory fixed-window rate limiter: the first request starts a window, and requests in
+ * that window are counted until it expires (a burst can straddle two windows).
  *
  * ⚠️  SINGLE-INSTANCE ONLY.  This counter lives in process memory.
  * In a multi-instance or serverless deployment each instance has its own
@@ -8,9 +9,11 @@
  * or an external KV store (e.g. Cloudflare KV / Upstash Redis).
  *
  * The IP address is extracted from Cloudflare's `CF-Connecting-IP` header when
- * present, then `X-Forwarded-For`, then falls back to a constant sentinel so
- * the limiter still applies on localhost.  Arbitrary client-supplied IPs are
- * NOT trusted — only the first value in `X-Forwarded-For` is used.
+ * present, then `X-Real-IP`, then `X-Forwarded-For`, then falls back to a constant
+ * sentinel so the limiter still applies on localhost.  Values must look like an IP
+ * address; from `X-Forwarded-For` the LAST valid entry is used (the one appended by the
+ * nearest proxy), because earlier entries can be written by the client.  These headers
+ * are only trustworthy if the origin is reachable solely through a trusted proxy.
  *
  * The counter is keyed on `<endpoint>:<ip>` to keep limits per-endpoint.
  */
@@ -34,7 +37,7 @@ function prune(now: number): void {
 }
 
 export type RateLimitOptions = {
-  /** Rolling window duration in milliseconds. */
+  /** Fixed window duration in milliseconds, counted from the first request. */
   windowMs: number;
   /** Maximum requests allowed per window per key. */
   max: number;
@@ -72,7 +75,7 @@ export function rateLimit(request: Request, options: RateLimitOptions): void {
 /**
  * Shared multi-instance rate limiter.
  *
- * When Supabase database access is provided, synchronizes sliding-window request counts
+ * When Supabase database access is provided, synchronizes fixed-window request counts
  * centrally across all application instances using the `public.check_rate_limit` RPC.
  * Falls back to process in-memory limiting during local tests or transient database outages.
  */
@@ -136,9 +139,8 @@ function isValidIp(ip: string): boolean {
  * Priority:
  * 1. `cf-connecting-ip`: Set and overwritten by Cloudflare's edge network; cannot be spoofed.
  * 2. `x-real-ip`: Set by trusted upstream reverse proxies (e.g., Nginx proxy_set_header).
- * 3. `x-forwarded-for`: When behind reverse proxies that append client IPs, takes the
- *    immediate upstream client IP, validating against basic IPv4/IPv6 structure to prevent
- *    arbitrary header injection.
+ * 3. `x-forwarded-for`: When behind reverse proxies that append client IPs, takes the LAST
+ *    entry that is a valid IPv4/IPv6 address (the one the nearest proxy appended).
  * 4. Fallback to "local" for development environments.
  */
 export function getClientIp(request: Request): string {

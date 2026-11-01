@@ -42,9 +42,10 @@ const MIGRATIONS = [
   "0004_atomic_booking_and_outbox_claim.sql",
 ] as const;
 const HARDENING_MIGRATION = "0005_revoke_public_function_execute.sql";
+const CONSENT_MIGRATION = "0006_store_privacy_consent.sql";
 
 const RPC_SIGNATURES = [
-  "public.create_appointment_with_outbox(uuid,text,text,text,text,date,text,text,text)",
+  "public.create_appointment_with_outbox(uuid,text,text,text,text,date,text,text,text,timestamptz,text)",
   "public.claim_notification_outbox_jobs(integer,integer)",
   "public.check_rate_limit(text,integer,integer)",
 ] as const;
@@ -81,6 +82,8 @@ type BookingInput = {
   phone?: string;
   date?: string;
   time?: string;
+  consentAt?: string | null;
+  policyVersion?: string | null;
 };
 
 const suite = DATABASE_URL ? describe : REQUIRED ? describe : describe.skip;
@@ -109,6 +112,9 @@ suite("real PostgreSQL: migrations, permissions and RPCs", () => {
 
     // 0005 contains its own self-check and raises if anon/authenticated can still execute.
     await sql.unsafe(readMigration(HARDENING_MIGRATION));
+
+    // 0006 replaces the booking RPC (new signature) and has its own self-check.
+    await sql.unsafe(readMigration(CONSENT_MIGRATION));
   });
 
   afterAll(async () => {
@@ -140,7 +146,9 @@ suite("real PostgreSQL: migrations, permissions and RPCs", () => {
         ${input.date ?? "2026-12-01"}::date,
         ${input.time ?? "Morning"}::text,
         ${null}::text,
-        ${null}::text
+        ${null}::text,
+        ${input.consentAt === undefined ? "2026-10-26T20:00:00Z" : input.consentAt}::timestamptz,
+        ${input.policyVersion === undefined ? "test-version" : input.policyVersion}::text
       ) AS id`;
     if (!row) throw new Error("RPC returned no row");
     return row.id;
@@ -257,6 +265,34 @@ suite("real PostgreSQL: migrations, permissions and RPCs", () => {
       const [job] = await sql<{ appointment_id: string; status: string; attempts: number }[]>`
         SELECT appointment_id, status, attempts FROM public.notification_outbox`;
       expect(job).toMatchObject({ appointment_id: id, status: "pending", attempts: 0 });
+    });
+
+    it("stores the privacy consent time and policy version with the appointment", async () => {
+      const id = await book({ consentAt: "2026-10-26T20:00:00Z", policyVersion: "2026-10-draft" });
+
+      const [row] = await sql<{ at: Date; version: string }[]>`
+        SELECT privacy_consent_at AS at, privacy_policy_version AS version
+        FROM public.appointments WHERE id = ${id}`;
+      expect(row?.at.toISOString()).toBe("2026-10-26T20:00:00.000Z");
+      expect(row?.version).toBe("2026-10-draft");
+    });
+
+    it("leaves consent empty for bookings that have none (older rows are not invented)", async () => {
+      const id = await book({ consentAt: null, policyVersion: null });
+
+      const [row] = await sql<{ at: Date | null; version: string | null }[]>`
+        SELECT privacy_consent_at AS at, privacy_policy_version AS version
+        FROM public.appointments WHERE id = ${id}`;
+      expect(row).toEqual({ at: null, version: null });
+    });
+
+    it("keeps exactly one version of the function: the old 9-argument one is gone", async () => {
+      const rows = await sql<{ args: string }[]>`
+        SELECT pg_get_function_identity_arguments(oid) AS args
+        FROM pg_proc
+        WHERE proname = 'create_appointment_with_outbox' AND pronamespace = 'public'::regnamespace`;
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.args).toContain("p_privacy_consent_at");
     });
 
     it("returns the existing id for a replay of the same slot within the window", async () => {

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/lib/errors";
+import { PRIVACY_POLICY_VERSION } from "../constants";
 
 const mockInsert = vi.fn();
 const mockUpsert = vi.fn();
@@ -173,6 +174,36 @@ describe("handleCreateAppointment (server-side booking flow)", () => {
     const sent = sendEmail.mock.calls[0]?.[0] as { subject: string; html: string };
     expect(sent.subject).toContain("Asha Roy");
     expect(sent.html).toContain("+919147718046");
+  });
+
+  it("records consent with the server's clock and the current privacy policy version", async () => {
+    await handleCreateAppointment(postRequest(validBody));
+
+    expect(mockRpc).toHaveBeenCalledWith(
+      "create_appointment_with_outbox",
+      expect.objectContaining({
+        p_privacy_consent_at: "2026-10-26T20:00:00.000Z", // the faked "now"
+        p_privacy_policy_version: PRIVACY_POLICY_VERSION,
+      }),
+    );
+  });
+
+  it("ignores a consent time or policy version sent by the browser", async () => {
+    await handleCreateAppointment(
+      postRequest({
+        ...validBody,
+        privacy_consent_at: "2000-01-01T00:00:00.000Z",
+        privacy_policy_version: "made-up",
+      }),
+    );
+
+    expect(mockRpc).toHaveBeenCalledWith(
+      "create_appointment_with_outbox",
+      expect.objectContaining({
+        p_privacy_consent_at: "2026-10-26T20:00:00.000Z",
+        p_privacy_policy_version: PRIVACY_POLICY_VERSION,
+      }),
+    );
   });
 
   it("does not send the email itself when the retry worker already owns the outbox job", async () => {

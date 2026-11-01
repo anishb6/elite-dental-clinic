@@ -62,6 +62,34 @@ export function getServerDatabaseEnv(): ServerDatabaseEnv {
   };
 }
 
+/** Returns a trimmed-non-empty env value as-is, or `undefined` when unset or blank. */
+function readOptional(name: string): string | undefined {
+  const value = process.env[name];
+  return value !== undefined && value.trim() !== "" ? value : undefined;
+}
+
+/** True when `SUPABASE_SERVICE_ROLE_KEY` is set, i.e. the trusted server database is usable. */
+export function hasServiceRoleKey(): boolean {
+  return readOptional("SUPABASE_SERVICE_ROLE_KEY") !== undefined;
+}
+
+/** Shared secret for internal endpoints (`X-Notify-Secret`), or `undefined` when not configured. */
+export function getNotifySecret(): string | undefined {
+  return readOptional("NOTIFY_SECRET");
+}
+
+/** Cloudflare Turnstile secret, or `undefined` when not configured. */
+export function getTurnstileSecret(): string | undefined {
+  return readOptional("TURNSTILE_SECRET_KEY");
+}
+
+/** True only for an explicit local development or test run; never in production. */
+export function isExplicitDevOrTest(): boolean {
+  const nodeEnv = process.env["NODE_ENV"];
+  if (nodeEnv === "production") return false;
+  return nodeEnv === "test" || nodeEnv === "development" || Boolean(process.env["VITEST"]);
+}
+
 /** Check if Resend email notifications are fully configured. */
 export function isEmailConfigured(): boolean {
   const apiKey = process.env["RESEND_API_KEY"];

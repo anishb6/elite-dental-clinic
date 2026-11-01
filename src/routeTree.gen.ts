@@ -22,7 +22,6 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiCreateAppointmentRouteImport } from './routes/api/create-appointment'
-import { Route as ApiNotifyAppointmentRouteImport } from './routes/api/notify-appointment'
 import { Route as ApiRetryNotificationsRouteImport } from './routes/api/retry-notifications'
 import { Route as ApiAdminAppointmentsRouteImport } from './routes/api/admin/appointments'
 import { Route as ApiAdminRetryOutboxRouteImport } from './routes/api/admin/retry-outbox'
@@ -92,11 +91,6 @@ const ApiCreateAppointmentRoute = ApiCreateAppointmentRouteImport.update({
   path: '/api/create-appointment',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiNotifyAppointmentRoute = ApiNotifyAppointmentRouteImport.update({
-  id: '/api/notify-appointment',
-  path: '/api/notify-appointment',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiRetryNotificationsRoute = ApiRetryNotificationsRouteImport.update({
   id: '/api/retry-notifications',
   path: '/api/retry-notifications',
@@ -126,7 +120,6 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/create-appointment': typeof ApiCreateAppointmentRoute
-  '/api/notify-appointment': typeof ApiNotifyAppointmentRoute
   '/api/retry-notifications': typeof ApiRetryNotificationsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/admin/appointments': typeof ApiAdminAppointmentsRoute
@@ -145,7 +138,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/create-appointment': typeof ApiCreateAppointmentRoute
-  '/api/notify-appointment': typeof ApiNotifyAppointmentRoute
   '/api/retry-notifications': typeof ApiRetryNotificationsRoute
   '/admin': typeof AdminIndexRoute
   '/api/admin/appointments': typeof ApiAdminAppointmentsRoute
@@ -165,7 +157,6 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/create-appointment': typeof ApiCreateAppointmentRoute
-  '/api/notify-appointment': typeof ApiNotifyAppointmentRoute
   '/api/retry-notifications': typeof ApiRetryNotificationsRoute
   '/admin/': typeof AdminIndexRoute
   '/api/admin/appointments': typeof ApiAdminAppointmentsRoute
@@ -186,7 +177,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/login'
     | '/api/create-appointment'
-    | '/api/notify-appointment'
     | '/api/retry-notifications'
     | '/admin/'
     | '/api/admin/appointments'
@@ -205,7 +195,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/login'
     | '/api/create-appointment'
-    | '/api/notify-appointment'
     | '/api/retry-notifications'
     | '/admin'
     | '/api/admin/appointments'
@@ -224,7 +213,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/login'
     | '/api/create-appointment'
-    | '/api/notify-appointment'
     | '/api/retry-notifications'
     | '/admin/'
     | '/api/admin/appointments'
@@ -244,7 +232,6 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ApiCreateAppointmentRoute: typeof ApiCreateAppointmentRoute
-  ApiNotifyAppointmentRoute: typeof ApiNotifyAppointmentRoute
   ApiRetryNotificationsRoute: typeof ApiRetryNotificationsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ApiAdminAppointmentsRoute: typeof ApiAdminAppointmentsRoute
@@ -344,13 +331,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCreateAppointmentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/notify-appointment': {
-      id: '/api/notify-appointment'
-      path: '/api/notify-appointment'
-      fullPath: '/api/notify-appointment'
-      preLoaderRoute: typeof ApiNotifyAppointmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/retry-notifications': {
       id: '/api/retry-notifications'
       path: '/api/retry-notifications'
@@ -388,7 +368,6 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,
   ApiCreateAppointmentRoute: ApiCreateAppointmentRoute,
-  ApiNotifyAppointmentRoute: ApiNotifyAppointmentRoute,
   ApiRetryNotificationsRoute: ApiRetryNotificationsRoute,
   AdminIndexRoute: AdminIndexRoute,
   ApiAdminAppointmentsRoute: ApiAdminAppointmentsRoute,

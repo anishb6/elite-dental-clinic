@@ -18,6 +18,8 @@ export type Database = {
           phone: string;
           preferred_date: string;
           preferred_time: string;
+          privacy_consent_at: string | null;
+          privacy_policy_version: string | null;
           source: string | null;
           status: string;
           treatment: string;
@@ -31,6 +33,8 @@ export type Database = {
           phone: string;
           preferred_date: string;
           preferred_time: string;
+          privacy_consent_at?: string | null;
+          privacy_policy_version?: string | null;
           source?: string | null;
           status?: string;
           treatment: string;
@@ -44,6 +48,8 @@ export type Database = {
           phone?: string;
           preferred_date?: string;
           preferred_time?: string;
+          privacy_consent_at?: string | null;
+          privacy_policy_version?: string | null;
           source?: string | null;
           status?: string;
           treatment?: string;
@@ -113,6 +119,8 @@ export type Database = {
           p_preferred_time: string;
           p_message: string | null;
           p_source: string | null;
+          p_privacy_consent_at: string;
+          p_privacy_policy_version: string;
         };
         Returns: string;
       };

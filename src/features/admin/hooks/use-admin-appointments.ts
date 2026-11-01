@@ -1,21 +1,16 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  AdminApiError,
-  fetchAppointments,
-  retryOutbox,
-  updateAppointmentStatus,
-} from "../api/admin.api";
+import { getErrorStatus } from "@/lib/errors";
+import { fetchAppointments, retryOutbox, updateAppointmentStatus } from "../api/admin.api";
 import type { AppointmentPage, AppointmentStatus, StatusFilter } from "../types";
 
-export const PAGE_SIZE = 15;
+const PAGE_SIZE = 15;
 
 type Options = { token: string | null; page: number; status: StatusFilter; search: string };
 
 /** Auth failures won't fix themselves on retry; everything else gets one more try. */
 function shouldRetry(failureCount: number, error: unknown): boolean {
-  if (error instanceof AdminApiError && (error.status === 401 || error.status === 403)) {
-    return false;
-  }
+  const status = getErrorStatus(error);
+  if (status === 401 || status === 403) return false;
   return failureCount < 1;
 }
 

@@ -10,6 +10,7 @@
  * - Cloudflare's dummy tokens are honoured only in those same explicit dev/test runs.
  * - When the secret is set, every token is verified against Cloudflare.
  */
+import { getTurnstileSecret, isExplicitDevOrTest } from "@/config/env.server";
 import { AppError } from "@/lib/errors";
 import { createLogger } from "@/lib/logger";
 
@@ -28,27 +29,15 @@ export type TurnstileVerifyResult = {
   errorCodes?: string[] | undefined;
 };
 
-/** Checks whether the execution environment is an explicit local development or test suite run. */
-function isExplicitDevOrTest(): boolean {
-  if (process.env["NODE_ENV"] === "production") {
-    return false;
-  }
-  return (
-    process.env["NODE_ENV"] === "test" ||
-    process.env["NODE_ENV"] === "development" ||
-    Boolean(process.env["VITEST"])
-  );
-}
-
 export async function verifyTurnstileToken(
   token?: string | null,
   remoteIp?: string,
 ): Promise<TurnstileVerifyResult> {
-  const secretKey = process.env["TURNSTILE_SECRET_KEY"];
+  const secretKey = getTurnstileSecret();
 
   // In production, missing TURNSTILE_SECRET_KEY must fail closed to prevent unprotected submissions.
   // Any bypass is strictly limited to explicit local development or test environments.
-  if (!secretKey || secretKey.trim() === "") {
+  if (!secretKey) {
     if (isExplicitDevOrTest()) {
       return { success: true };
     }

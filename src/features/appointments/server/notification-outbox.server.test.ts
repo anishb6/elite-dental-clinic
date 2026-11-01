@@ -7,17 +7,14 @@ import {
   claimAndDeliverNotification,
   claimOutboxJob,
   deliverNotification,
-  enqueueNotification,
   processNotificationOutbox,
   sanitizeErrorMetadata,
 } from "./notification-outbox.server";
 
-const mockUpsert = vi.fn();
 const mockUpdate = vi.fn();
 const mockSelect = vi.fn();
 const mockRpc = vi.fn();
 const mockFrom = vi.fn((_table?: string) => ({
-  upsert: mockUpsert,
   update: mockUpdate,
   select: mockSelect,
 }));
@@ -72,27 +69,11 @@ describe("notification-outbox.server", () => {
     });
   });
 
-  describe("enqueueNotification", () => {
-    it("enqueues appointment into outbox with idempotency constraint", async () => {
-      mockUpsert.mockReturnValue({
-        select: vi.fn(() => ({
-          maybeSingle: vi.fn().mockResolvedValue({ data: { id: "outbox-1" }, error: null }),
-        })),
-      });
-
-      const res = await enqueueNotification(mockSupabase, "app-123");
-      expect(res.enqueued).toBe(true);
-      expect(res.id).toBe("outbox-1");
-      expect(mockFrom).toHaveBeenCalledWith("notification_outbox");
-    });
-  });
-
   describe("deliverNotification", () => {
     it("skips delivery and returns success immediately if notification is already marked sent (idempotency guard)", async () => {
       mockFrom.mockImplementation((table?: string) => {
         if (table === "notification_outbox") {
           return {
-            upsert: mockUpsert,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
                 maybeSingle: vi.fn().mockResolvedValue({
@@ -104,7 +85,7 @@ describe("notification-outbox.server", () => {
             update: mockUpdate,
           };
         }
-        return { upsert: mockUpsert, select: mockSelect, update: mockUpdate };
+        return { select: mockSelect, update: mockUpdate };
       });
 
       const result = await deliverNotification(mockSupabase, "app-already-sent");
@@ -129,7 +110,6 @@ describe("notification-outbox.server", () => {
       mockFrom.mockImplementation((table?: string) => {
         if (table === "notification_outbox") {
           return {
-            upsert: mockUpsert,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
                 maybeSingle: vi.fn().mockResolvedValue({
@@ -145,7 +125,6 @@ describe("notification-outbox.server", () => {
         }
         if (table === "appointments") {
           return {
-            upsert: mockUpsert,
             update: mockUpdate,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
@@ -154,7 +133,7 @@ describe("notification-outbox.server", () => {
             })),
           };
         }
-        return { upsert: mockUpsert, select: mockSelect, update: mockUpdate };
+        return { select: mockSelect, update: mockUpdate };
       });
 
       mockSendEmail.mockResolvedValueOnce(undefined);
@@ -186,7 +165,6 @@ describe("notification-outbox.server", () => {
       mockFrom.mockImplementation((table?: string) => {
         if (table === "notification_outbox") {
           return {
-            upsert: mockUpsert,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
                 maybeSingle: vi.fn().mockResolvedValue({
@@ -202,7 +180,6 @@ describe("notification-outbox.server", () => {
         }
         if (table === "appointments") {
           return {
-            upsert: mockUpsert,
             update: mockUpdate,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
@@ -211,7 +188,7 @@ describe("notification-outbox.server", () => {
             })),
           };
         }
-        return { upsert: mockUpsert, select: mockSelect, update: mockUpdate };
+        return { select: mockSelect, update: mockUpdate };
       });
 
       mockSendEmail.mockRejectedValueOnce(
@@ -246,7 +223,6 @@ describe("notification-outbox.server", () => {
       mockFrom.mockImplementation((table?: string) => {
         if (table === "notification_outbox") {
           return {
-            upsert: mockUpsert,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
                 maybeSingle: vi.fn().mockResolvedValue({
@@ -265,7 +241,6 @@ describe("notification-outbox.server", () => {
         }
         if (table === "appointments") {
           return {
-            upsert: mockUpsert,
             update: mockUpdate,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
@@ -274,7 +249,7 @@ describe("notification-outbox.server", () => {
             })),
           };
         }
-        return { upsert: mockUpsert, select: mockSelect, update: mockUpdate };
+        return { select: mockSelect, update: mockUpdate };
       });
 
       mockSendEmail.mockResolvedValueOnce(undefined);
@@ -296,7 +271,6 @@ describe("notification-outbox.server", () => {
       };
       mockUpdate.mockReturnValue(chain);
       mockFrom.mockImplementation(() => ({
-        upsert: mockUpsert,
         update: mockUpdate,
         select: mockSelect,
       }));
@@ -338,7 +312,6 @@ describe("notification-outbox.server", () => {
       mockFrom.mockImplementation((table?: string) => {
         if (table === "notification_outbox") {
           return {
-            upsert: mockUpsert,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
                 maybeSingle: vi.fn().mockResolvedValue({
@@ -352,7 +325,7 @@ describe("notification-outbox.server", () => {
             }),
           };
         }
-        return { upsert: mockUpsert, select: mockSelect, update: mockUpdate };
+        return { select: mockSelect, update: mockUpdate };
       });
 
       const before = Date.now();
@@ -376,7 +349,6 @@ describe("notification-outbox.server", () => {
     it("stops retrying once max attempts are used up", async () => {
       delete process.env["RESEND_API_KEY"];
       mockFrom.mockImplementation((table?: string) => ({
-        upsert: mockUpsert,
         select:
           table === "notification_outbox"
             ? vi.fn(() => ({
@@ -426,7 +398,6 @@ describe("notification-outbox.server", () => {
       mockFrom.mockImplementation((table?: string) => {
         if (table === "appointments") {
           return {
-            upsert: mockUpsert,
             update: mockUpdate,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
@@ -437,7 +408,6 @@ describe("notification-outbox.server", () => {
         }
         if (table === "notification_outbox") {
           return {
-            upsert: mockUpsert,
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
                 maybeSingle: vi.fn().mockResolvedValue({
@@ -451,7 +421,7 @@ describe("notification-outbox.server", () => {
             }),
           };
         }
-        return { upsert: mockUpsert, select: mockSelect, update: mockUpdate };
+        return { select: mockSelect, update: mockUpdate };
       });
 
       mockSendEmail.mockResolvedValue(undefined);

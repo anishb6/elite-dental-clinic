@@ -350,6 +350,7 @@ describe("admin-appointments.server", () => {
 
       const res = await handleListAdminAppointments(req);
       expect(res.status).toBe(200);
+      expect(res.headers.get("Cache-Control")).toBe("no-store"); // patient data must not be cached
 
       const json = (await res.json()) as {
         ok: boolean;
@@ -364,10 +365,36 @@ describe("admin-appointments.server", () => {
     });
   });
 
+  describe("handleListAdminAppointments search", () => {
+    it("passes the digits-only phone filter to the database query", async () => {
+      const or = vi.fn();
+      const result = { data: [], count: 0, error: null };
+      const chain: Record<string, unknown> = {
+        order: vi.fn(() => chain),
+        range: vi.fn(() => chain),
+        eq: vi.fn(() => chain),
+        or: or.mockImplementation(() => chain),
+        then: (resolve: (v: typeof result) => unknown) => resolve(result),
+      };
+      mockAppointmentsSelect.mockReturnValue(chain);
+
+      const req = new Request(
+        `http://localhost/api/admin/appointments?search=${encodeURIComponent("91477 18046")}`,
+        { headers: { Authorization: "Bearer valid-token" } },
+      );
+      const res = await handleListAdminAppointments(req);
+
+      expect(res.status).toBe(200);
+      expect(or).toHaveBeenCalledWith("name.ilike.%91477 18046%,phone.ilike.%9147718046%");
+    });
+  });
+
   describe("handleUpdateAdminAppointmentStatus", () => {
     it("updates appointment status successfully for valid status values", async () => {
       mockAppointmentsUpdate.mockReturnValue({
-        eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({ data: [{ id: "row" }], error: null }),
+        }),
       });
 
       const validUuid = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
@@ -382,6 +409,7 @@ describe("admin-appointments.server", () => {
 
       const res = await handleUpdateAdminAppointmentStatus(req);
       expect(res.status).toBe(200);
+      expect(res.headers.get("Cache-Control")).toBe("no-store");
 
       const json = (await res.json()) as {
         ok: boolean;
@@ -390,6 +418,47 @@ describe("admin-appointments.server", () => {
       expect(json.ok).toBe(true);
       expect(json.data.updated).toBe(true);
       expect(json.data.status).toBe("confirmed");
+    });
+
+    it("returns 404 'Appointment not found' when no row matches the id", async () => {
+      mockAppointmentsUpdate.mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        }),
+      });
+
+      const req = new Request("http://localhost/api/admin/appointments", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer valid-token" },
+        body: JSON.stringify({ id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", status: "confirmed" }),
+      });
+
+      await expect(handleUpdateAdminAppointmentStatus(req)).rejects.toMatchObject({
+        status: 404,
+        message: "Appointment not found",
+      });
+    });
+
+    it("logs the staff user id (and no patient data) when a status is updated", async () => {
+      mockAppointmentsUpdate.mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({ data: [{ id: "row" }], error: null }),
+        }),
+      });
+      const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+      const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+      const req = new Request("http://localhost/api/admin/appointments", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer valid-token" },
+        body: JSON.stringify({ id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", status: "called" }),
+      });
+      await handleUpdateAdminAppointmentStatus(req);
+
+      const logged = JSON.stringify([...infoSpy.mock.calls, ...logSpy.mock.calls]);
+      expect(logged).toContain("admin-user-id");
+      infoSpy.mockRestore();
+      logSpy.mockRestore();
     });
 
     it("rejects invalid status values with 400 VALIDATION error", async () => {
@@ -419,6 +488,7 @@ describe("admin-appointments.server", () => {
 
       const res = await handleRetryOutbox(req);
       expect(res.status).toBe(200);
+      expect(res.headers.get("Cache-Control")).toBe("no-store");
 
       const json = (await res.json()) as {
         ok: boolean;
@@ -457,5 +527,40 @@ describe("sanitizeSearchTerm (PostgREST filter-injection guard)", () => {
   it("caps the length", async () => {
     const { sanitizeSearchTerm } = await import("./admin-appointments.server");
     expect(sanitizeSearchTerm("a".repeat(500))).toHaveLength(50);
+  });
+});
+
+describe("buildSearchFilter (admin search box)", () => {
+  it("searches the phone column by digits only when the term has 6+ digits", async () => {
+    const { buildSearchFilter } = await import("./admin-appointments.server");
+    // Staff typed a formatted number; the stored phone is +919147718046.
+    expect(buildSearchFilter("91477 18046")).toBe(
+      "name.ilike.%91477 18046%,phone.ilike.%9147718046%",
+    );
+    expect(buildSearchFilter("+91-91477-18046")).toBe(
+      "name.ilike.%+91-91477-18046%,phone.ilike.%919147718046%",
+    );
+  });
+
+  it("keeps short or non-numeric terms as typed (name search, partial phone)", async () => {
+    const { buildSearchFilter } = await import("./admin-appointments.server");
+    expect(buildSearchFilter("Asha")).toBe("name.ilike.%Asha%,phone.ilike.%Asha%");
+    expect(buildSearchFilter("9147")).toBe("name.ilike.%9147%,phone.ilike.%9147%");
+  });
+
+  it("returns null when nothing searchable is left", async () => {
+    const { buildSearchFilter } = await import("./admin-appointments.server");
+    expect(buildSearchFilter("")).toBeNull();
+    expect(buildSearchFilter("%,()")).toBeNull();
+  });
+
+  it("still cannot be used to inject extra filters", async () => {
+    const { buildSearchFilter } = await import("./admin-appointments.server");
+    const filter = buildSearchFilter("x%,status.eq.new),(name.ilike.*") ?? "";
+    // Exactly the two conditions we wrote ourselves: one separating comma, no groups, no stray wildcards.
+    expect(filter.split(",")).toHaveLength(2);
+    expect(filter).not.toMatch(/[()*"\\]/);
+    expect(filter.replace(/%/g, "").includes("status.eq")).toBe(true); // harmless text inside the ilike value
+    expect(filter.match(/%/g)).toHaveLength(4); // only our own two pairs of wildcards
   });
 });

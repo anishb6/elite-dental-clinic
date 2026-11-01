@@ -101,16 +101,6 @@ export const createAppointmentSchema = bookingFormSchema.extend({
 export type CreateAppointmentValues = z.infer<typeof createAppointmentSchema>;
 
 /**
- * Request schema for the internal appointment notification endpoint.
- * Requires a verified database UUID and does not accept client-provided patient data.
- */
-export const notifyAppointmentRequestSchema = z.object({
-  appointment_id: z.string().uuid("Invalid appointment ID format (UUID expected)"),
-});
-
-export type NotifyAppointmentRequest = z.infer<typeof notifyAppointmentRequestSchema>;
-
-/**
  * Normalised appointment request - what is stored in the database and sent to the
  * notification endpoint. Optional text fields are `null` rather than "".
  * The server re-validates this schema, never trusting the browser.

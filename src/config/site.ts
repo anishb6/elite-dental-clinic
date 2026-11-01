@@ -14,6 +14,7 @@ export const CLINIC = {
   city: "Barasat",
   address:
     "Sree Durga Apartment, near Nabapally Co-operative Bank, opposite Modern Homeo Hall, Bijaylakshmi Colony, Chakravartipara, Nabapally, Barasat, Kolkata, West Bengal 700126",
+  privacyEmail: "sahadebayan.doc@gmail.com",
   phone: "+91 91477 18046",
   phoneHref: "tel:+919147718046",
   whatsapp: WHATSAPP_NUMBER,

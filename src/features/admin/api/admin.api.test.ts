@@ -1,10 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  AdminApiError,
-  fetchAppointments,
-  retryOutbox,
-  updateAppointmentStatus,
-} from "./admin.api";
+import { AppError, getErrorStatus } from "@/lib/errors";
+import { fetchAppointments, retryOutbox, updateAppointmentStatus } from "./admin.api";
 
 const fetchMock = vi.fn();
 
@@ -47,7 +43,7 @@ describe("admin API client", () => {
     respond(401, { ok: false, error: { code: "VALIDATION", message: "Session expired." } });
     await expect(
       fetchAppointments("t", { page: 1, pageSize: 15, status: "all", search: "" }),
-    ).rejects.toMatchObject({ name: "AdminApiError", status: 401, message: "Session expired." });
+    ).rejects.toMatchObject({ name: "AppError", status: 401, userMessage: "Session expired." });
 
     respond(403, { ok: false, error: { code: "VALIDATION", message: "Access forbidden." } });
     await expect(
@@ -55,22 +51,20 @@ describe("admin API client", () => {
     ).rejects.toMatchObject({ status: 403 });
   });
 
-  it("turns a network failure into a friendly error with status 0", async () => {
+  it("turns a network failure into a friendly NETWORK error with no HTTP status", async () => {
     stub();
     fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
     const error = await retryOutbox("t").catch((e: unknown) => e);
-    expect(error).toBeInstanceOf(AdminApiError);
-    expect((error as AdminApiError).status).toBe(0);
-    expect((error as AdminApiError).message).toMatch(/network/i);
+    expect(error).toBeInstanceOf(AppError);
+    expect((error as AppError).code).toBe("NETWORK");
+    expect(getErrorStatus(error)).toBeNull();
+    expect((error as AppError).userMessage).toMatch(/network/i);
   });
 
   it("handles a non-JSON error body (e.g. a proxy error page)", async () => {
     stub();
     respond(502, "<html>Bad gateway</html>");
-    await expect(retryOutbox("t")).rejects.toMatchObject({
-      status: 502,
-      message: "Request failed (HTTP 502).",
-    });
+    await expect(retryOutbox("t")).rejects.toMatchObject({ code: "SERVER", status: 502 });
   });
 
   it("PATCHes a JSON status update", async () => {

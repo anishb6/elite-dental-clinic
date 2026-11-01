@@ -55,34 +55,6 @@ export function sanitizeErrorMetadata(error: unknown): string {
   return "UNKNOWN_ERROR";
 }
 
-/** Enqueue a new notification job in the outbox for an appointment. */
-export async function enqueueNotification(
-  supabase: SupabaseClient<Database>,
-  appointmentId: string,
-): Promise<{ enqueued: boolean; id?: string | undefined }> {
-  const { data, error } = await supabase
-    .from("notification_outbox")
-    .upsert(
-      {
-        appointment_id: appointmentId,
-        status: "pending",
-        attempts: 0,
-        max_attempts: 5,
-        next_attempt_at: new Date().toISOString(),
-      },
-      { onConflict: "appointment_id", ignoreDuplicates: true },
-    )
-    .select("id")
-    .maybeSingle();
-
-  if (error) {
-    logger.error("Failed to enqueue notification job", { code: error.code });
-    return { enqueued: false };
-  }
-
-  return { enqueued: true, id: data?.id };
-}
-
 type OutboxProgress = { attempts: number; max_attempts: number } | null | undefined;
 
 /**
@@ -238,7 +210,9 @@ export async function deliverNotification(
       .eq("appointment_id", appointmentId);
 
     if (updateError) {
-      // Email was successfully delivered; log warning but treat as successful so we don't re-send
+      // The email was delivered, so report success to the caller. But the row is still "processing",
+      // so after the stale window (10 min) the retry worker will claim it and send the email AGAIN.
+      // That is the at-least-once trade-off: a duplicate email is accepted over a lost one.
       logger.error("CRITICAL: Email delivered but outbox status update failed", {
         appointmentId,
         code: updateError.code,

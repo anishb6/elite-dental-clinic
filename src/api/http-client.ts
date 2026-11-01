@@ -14,12 +14,14 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 export type ApiRequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
+  /** Extra request headers (e.g. `Authorization` for staff endpoints). */
+  headers?: Record<string, string>;
   timeoutMs?: number;
   signal?: AbortSignal;
 };
 
 export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { method = "GET", body, timeoutMs = DEFAULT_TIMEOUT_MS, signal } = options;
+  const { method = "GET", body, headers, timeoutMs = DEFAULT_TIMEOUT_MS, signal } = options;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -31,10 +33,13 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
       method,
       signal: controller.signal,
     };
-    if (body !== undefined) {
-      init.headers = { "Content-Type": "application/json" };
-      init.body = JSON.stringify(body);
+    if (headers || body !== undefined) {
+      init.headers = {
+        ...(body !== undefined && { "Content-Type": "application/json" }),
+        ...headers,
+      };
     }
+    if (body !== undefined) init.body = JSON.stringify(body);
     response = await fetch(path, init);
   } catch (cause) {
     const timedOut = controller.signal.aborted && !signal?.aborted;

@@ -1,12 +1,16 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { createLogger } from "@/lib/logger";
 
-export type AdminSession = { token: string; email: string };
+const logger = createLogger("admin-session");
+
+type AdminSession = { token: string; email: string };
 
 /**
  * Tracks the Supabase Auth session for the staff portal. Sends the visitor to the login page
- * whenever there is no session, and keeps `token` current when Supabase refreshes it.
+ * whenever there is no session (including when the session can't be read at all), and keeps
+ * `token` current when Supabase refreshes it.
  */
 export function useAdminSession() {
   const navigate = useNavigate();
@@ -22,7 +26,13 @@ export function useAdminSession() {
       setSession({ token: next.access_token, email: next.user.email ?? "Clinic Staff" });
     }
 
-    void supabase.auth.getSession().then(({ data }) => apply(data.session));
+    supabase.auth
+      .getSession()
+      .then(({ data }) => apply(data.session))
+      .catch((cause: unknown) => {
+        logger.error("Could not read the auth session", cause);
+        apply(null);
+      });
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, next) => apply(next));
@@ -31,7 +41,12 @@ export function useAdminSession() {
   }, [navigate]);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (cause) {
+      // Leave the portal regardless; a failed remote sign-out must not trap staff on this page.
+      logger.error("Sign-out request failed", cause);
+    }
     void navigate({ to: "/admin/login" });
   }, [navigate]);
 

@@ -37,7 +37,7 @@ Single trusted server-side write path for creating appointment requests. Validat
   "source": "Google search", // Optional, one of BOOKING_SOURCES
   "website": "", // Honeypot field: real visitors leave blank
   "turnstile_token": "", // Optional Cloudflare Turnstile token
-  "privacy_consent": true, // Optional affirmative consent boolean
+  "privacy_consent": true, // Required, must be true. The server stamps the time and policy version itself
 }
 ```
 
@@ -53,10 +53,11 @@ Single trusted server-side write path for creating appointment requests. Validat
 ## 2. Staff Admin Endpoints (Protected by Supabase Auth)
 
 All admin endpoints require an `Authorization: Bearer <session-token>` header obtained by logging in via `/admin/login`.
+Successful admin responses carry `Cache-Control: no-store` because they contain patient data.
 
 ### `GET /api/admin/appointments`
 
-Returns a paginated list of appointments with notification outbox status.
+Returns a paginated list of appointments with notification outbox status. The `search` parameter matches the name, or the phone (a term with 6+ digits is matched on its digits only, so "91477 18046" finds `+919147718046`).
 
 **Query Parameters**:
 
@@ -117,6 +118,7 @@ Updates the operational status of an appointment.
 - `200 OK`: `{ "ok": true, "data": { "id": "uuid", "status": "confirmed", "updated": true } }`
 - `400 Bad Request`: Invalid status value
 - `401 Unauthorized`: Missing or invalid Bearer token
+- `404 Not Found`: No appointment with that id
 
 ### `POST /api/admin/retry-outbox`
 
@@ -145,6 +147,12 @@ Automated scheduled trigger endpoint for Cloudflare Cron Triggers or background 
 - `401 Unauthorized`: Missing or invalid secret
 - `500 Server Error`: `NOTIFY_SECRET` is not set on the server
 
-### `POST /api/notify-appointment` (Legacy / Internal)
+---
 
-Legacy endpoint retained for internal compatibility. Protected by `X-Notify-Secret`. Verifies appointment by database UUID; arbitrary client-supplied payload data is rejected.
+## Conventions for new endpoints
+
+- Register browser-called paths in `src/api/endpoints.ts`; never hard-code `/api/...` in feature code.
+- Handlers throw `AppError` and return `jsonOk(...)`; `withApiHandler` produces the envelope above.
+- Internal (cron/worker) endpoints authenticate with `requireNotifySecret(request)`
+  (`X-Notify-Secret`, constant-time compare, fails closed when `NOTIFY_SECRET` is unset).
+- Full checklist: "Adding an endpoint" in [ARCHITECTURE.md](ARCHITECTURE.md).
